@@ -1,0 +1,12 @@
+bin/
+build/
+
+*.o
+*.out
+*.exe
+main
+
+.vscode/
+.idea/
+.DS_Store
+    
