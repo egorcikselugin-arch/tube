@@ -4,8 +4,9 @@
 #include <limits>
 using namespace std;
 
-// ---------- Структуры ----------
-struct Pipe {
+
+struct Pipe 
+{
     string id;
     double length = 0;
     int diameter = 0;
@@ -13,7 +14,8 @@ struct Pipe {
     bool created = false;
 };
 
-struct Station {
+struct Station 
+{
     string name;
     int total = 0;
     int active = 0;
@@ -76,7 +78,6 @@ void editPipe(Pipe& p)
     cout << "Статус обновлён!\n";
 }
 
-// ---------- КС ----------
 void addStation(Station& s) 
 {
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
