@@ -6,7 +6,7 @@ using namespace std;
 
 struct Pipe
 {
-    string id;
+    string name;
     double length = 0;
     int diameter = 0;
     bool in_repair = false;
@@ -50,7 +50,7 @@ string inputLine(const string& prompt)
 
 void addPipe(Pipe& p)
 {
-    p.id = inputLine("Название трубы: ");
+    p.name = inputLine("Название трубы: ");
     p.length = input("Длина (км): ", 0.1, 10000.0);
     p.diameter = input("Диаметр (мм): ", 10, 2500);
     p.in_repair = input("В ремонте? (1-да, 0-нет): ", 0, 1) == 1;
@@ -59,15 +59,15 @@ void addPipe(Pipe& p)
 
 void showPipe(const Pipe& p)
 {
-    if (p.id.empty()) { cout << "Труба не создана.\n"; return; }
-    cout << "Труба: " << p.id << ", " << p.length << " км, "
+    if (p.name.empty()) { cout << "Труба не создана.\n"; return; }
+    cout << "Труба: " << p.name << ", " << p.length << " км, "
          << p.diameter << " мм, "
          << (p.in_repair ? "в ремонте" : "в работе") << "\n";
 }
 
 void editPipe(Pipe& p)
 {
-    if (p.id.empty()) { cout << "Сначала добавь трубу!\n"; return; }
+    if (p.name.empty()) { cout << "Сначала добавь трубу!\n"; return; }
     p.in_repair = input("В ремонте? (1-да, 0-нет): ", 0, 1) == 1;
     cout << "Статус обновлён!\n";
 }
@@ -83,7 +83,11 @@ void addStation(Station& s)
 
 void showStation(const Station& s)
 {
-    if (s.name.empty()) { cout << "КС не создана.\n"; return; }
+    if (s.name.empty()) 
+    {
+         cout << "КС не создана.\n"; 
+         return; 
+    }
     cout << "КС: " << s.name << ", цехов " << s.active << "/" << s.total
          << ", класс " << s.cls << "\n";
 }
@@ -94,26 +98,41 @@ void editStation(Station& s)
     cout << "Сейчас в работе " << s.active << " из " << s.total << "\n";
     cout << "1-запустить, 2-остановить, 0-отмена\n";
     int c = input("Выбор: ", 0, 2);
-    if (c == 1 && s.active < s.total) { s.active++; cout << "Запущен!\n"; }
-    else if (c == 2 && s.active > 0) { s.active--; cout << "Остановлен!\n"; }
-    else if (c != 0) cout << "Нельзя!\n";
+    if (c==0)
+        return;
+        
+    if (c == 1 && s.active < s.total) 
+    {
+         s.active++; 
+         cout << "Запущен!\n"; 
+    }
+    else if (c == 2 && s.active > 0) 
+    {
+         s.active--; 
+         cout << "Остановлен!\n"; 
+        }
+    else cout << "Нельзя!\n";
 }
 
 void save(const Pipe& p, const Station& s)
 {
     string f = inputLine("Имя файла: ");
     ofstream out(f);
-    if (!out) { cout << "Не открыть файл!\n"; return; }
+    if (!out) 
+    {
+         cout << "Не открыть файл!\n"; 
+         return; 
+    }
 
-    out << (p.id.empty() ? 0 : 1) << "\n";
-    if (!p.id.empty()) {
-        out << p.id << "\n"
+    out << (p.name.empty() ? 0 : 1) << "\n";//!!
+    if (!p.name.empty()) {
+        out << p.name << "\n"
             << p.length << "\n"
             << p.diameter << "\n"
             << p.in_repair << "\n";
     }
 
-    out << (s.name.empty() ? 0 : 1) << "\n";
+    out << (s.name.empty() ? 0 : 1) << "\n";//!!
     if (!s.name.empty()) {
         out << s.name << "\n"
             << s.total << "\n"
@@ -135,8 +154,8 @@ void load(Pipe& p, Station& s)
     if (!(in >> hasPipe)) { cerr << "Ошибка чтения\n"; return; }
     if (hasPipe) {
         in.ignore();
-        getline(in, p.id);
-        in >> p.length >> p.diameter >> p.in_repair;
+        getline(in, p.name);
+        in >> p.length >> p.diameter >> p.in_repair;//!!
         if (!in) { cerr << "Ошибка чтения трубы\n"; return; }
     } else {
         p = Pipe{};
@@ -147,26 +166,13 @@ void load(Pipe& p, Station& s)
     if (hasStation) {
         in.ignore();
         getline(in, s.name);
-        in >> s.total >> s.active >> s.cls;
+        in >> s.total >> s.active >> s.cls;//!!
         if (!in) { cerr << "Ошибка чтения КС\n"; return; }
     } else {
         s = Station{};
     }
 
     cout << "Загружено из " << f << "\n";
-}
-
-void fillAuto(Pipe& p, Station& s)
-{
-    p.id = "Северная";
-    p.length = 100.0;
-    p.diameter = 500;
-    p.in_repair = false;
-
-    s.name = "КС-1";
-    s.total = 5;
-    s.active = 3;
-    s.cls = 2;
 }
 
 void showMenu()
@@ -184,6 +190,7 @@ void showMenu()
 
 void choice(Pipe& p, Station& s)
 {
+
     while (true) {
         showMenu();
         int c = input("Выбор: ", 0, 7);
@@ -191,7 +198,10 @@ void choice(Pipe& p, Station& s)
         switch (c) {
             case 1: addPipe(p); break;
             case 2: addStation(s); break;
-            case 3: showPipe(p); showStation(s); break;
+            case 3: 
+                showPipe(p); 
+                showStation(s); 
+                break;
             case 4: editPipe(p); break;
             case 5: editStation(s); break;
             case 6: save(p, s); break;
@@ -209,8 +219,6 @@ int main()
 
     Pipe p;
     Station s;
-
-    fillAuto(p, s);
 
     choice(p, s);
 
